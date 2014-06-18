@@ -49,7 +49,7 @@ namespace SharpTAL
 
 namespace Templates
 {
-    [SecurityPermission(SecurityAction.PermitOnly, Execution = true)]
+//    [SecurityPermission(SecurityAction.PermitOnly, Execution = true)]
     public class Template_${template_hash}
     {
         public const string GENERATOR_VERSION = ""${generator_version}"";
@@ -303,16 +303,25 @@ namespace Templates
 
 			if (ti.GlobalsTypes != null)
 			{
-				foreach (string varName in ti.GlobalsTypes.Keys)
-				{
-					Type type = ti.GlobalsTypes[varName];
-					if (type != null)
-					{
-						string typeName = Utils.GetFullTypeName(type, _typeNamesCache);
-						_globalNames.Add(varName);
-						WriteToGlobals(@"var {1} = ({0})context[""{1}""];", typeName, varName);
-					}
-				}
+                foreach (string varName in ti.GlobalsTypes.Keys)
+                {
+                    Type type = ti.GlobalsTypes[varName];
+                    if (type != null)
+                    {
+                        string typeName = "";
+                        if (Utils.IsDynamicType(type))
+                        {
+                            typeName = "dynamic";
+                        }
+                        else
+                        {
+                            typeName = Utils.GetFullTypeName(type, _typeNamesCache);
+                        }
+
+                        _globalNames.Add(varName);
+                        WriteToGlobals(@"var {1} = ({0})context[""{1}""];", typeName, varName);
+                    }
+                }
 			}
 
 			//-----------------------
@@ -841,7 +850,7 @@ Global variable with namespace name allready exists.", programNamespace));
 			WriteToBody(@"// Backup the current attributes for this tag");
 			WriteToBody(@"Dictionary<string, Attr> __currentAttributesCopy_{0} = new Dictionary<string, Attr>(__currentAttributes);", repeatSubScopeId);
 			WriteToBody(@"");
-			WriteToBody(@"var enumerable_{0}_{1} = {2};", varName, repeatSubScopeId, expression);
+            WriteToBody(@"var enumerable_{0}_{1} = (IEnumerable){2};", varName, repeatSubScopeId, expression);
 			WriteToBody(@"var enumerator_{0}_{1} = enumerable_{0}_{1}.GetEnumerator();", varName, repeatSubScopeId);
 			WriteToBody(@"bool isfirst_{0}_{1} = true;", varName, repeatSubScopeId);
 			WriteToBody(@"bool islast_{0}_{1} = !enumerator_{0}_{1}.MoveNext();", varName, repeatSubScopeId);
@@ -870,7 +879,7 @@ Global variable with namespace name allready exists.", programNamespace));
 			WriteToBody(@"    }}");
 			WriteToBody(@"    isfirst_{0}_{1} = false;", varName, repeatSubScopeId);
 			WriteToBody(@"    ");
-			WriteToBody(@"    var {0} = enumerator_{0}_{1}.Current;", varName, repeatSubScopeId);
+			WriteToBody(@"    dynamic {0} = enumerator_{0}_{1}.Current;", varName, repeatSubScopeId);
 			WriteToBody(@"    if (!isdefault_{0}_{1})", varName, repeatSubScopeId);
 			WriteToBody(@"    {{");
 			WriteToBody(@"        islast_{0}_{1} = !enumerator_{0}_{1}.MoveNext();", varName, repeatSubScopeId);
