@@ -1156,7 +1156,7 @@ Global variable with namespace name allready exists.", programNamespace));
 			WriteToBody(@"        }}");
 			WriteToBody(@"        else");
 			WriteToBody(@"        {{");
-			WriteToBody(@"            output.Write((string)__tagContent);");
+			WriteToBody(@"            output.Write(__tagContent);");
 			WriteToBody(@"        }}");
 			WriteToBody(@"    }}");
 			WriteToBody(@"    else");
