@@ -83,7 +83,14 @@ namespace SharpTAL
                 foreach (string name in names)
                 {
                     Type type = globalsTypes[name];
-                    hash += name + type.FullName;
+                    if (type != null)
+                    {
+                        hash += name + type.FullName;
+                    }
+                    else
+                    {
+                        hash += name + "__NULL_TYPE__";
+                    }
                 }
                 hash = ComputeHash(hash);
             }
